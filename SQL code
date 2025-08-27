@@ -1,0 +1,41 @@
+CREATE TABLE organizations (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE volunteers (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  interests TEXT[]
+);
+
+CREATE TABLE events (
+  id SERIAL PRIMARY KEY,
+  organizer_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  date TIMESTAMP NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE roles (
+  id SERIAL PRIMARY KEY,
+  event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  required_volunteers INTEGER NOT NULL CHECK (required_volunteers > 0)
+);
+
+CREATE TABLE volunteer_roles (
+  id SERIAL PRIMARY KEY,
+  volunteer_id INTEGER REFERENCES volunteers(id) ON DELETE CASCADE,
+  role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+  attended BOOLEAN DEFAULT NULL,
+  UNIQUE(volunteer_id, role_id)
+);
